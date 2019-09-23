@@ -3,7 +3,7 @@ from getpass import getpass
 
 
 def check_id(username, password):
-    con = sqlite3.connect("C:\\Users\\Lenovo\\Desktop\\contactsUaP.db")
+    con = sqlite3.connect("/home/burak/Desktop/GitHub/Contacts_Mini_Project/contactsUaP.db")
     cursor = con.cursor()
     if username == "0":
         exit()
@@ -15,11 +15,14 @@ def check_id(username, password):
         if reformat_password(str(rpassWord)) == password:
             print("Login Successful")
             return True
+        elif rpassWord is None:
+            print("The Username You Have Entered is Wrong")
+            return False
         else:
             print("Wrong Password Try Again")
+
             return False
     except sqlite3.OperationalError:
-        print("The Username You Have Entered is Wrong")
         return False
 
 
@@ -46,7 +49,7 @@ def reformat_password(passWord):
 def connect_contacts(userName, passWord):
     if check_id(userName, passWord):
         print("Welcome To Your Contacts {}".format(userName))
-        con = sqlite3.connect("C:\\Users\\Lenovo\\Desktop\\{}Contacts.db".format(userName))
+        con = sqlite3.connect("/home/burak/Desktop/GitHub/Contacts_Mini_Project/{}Contacts.db".format(userName))
         return con
     else:
         main_menu()
@@ -81,6 +84,36 @@ def add_contacts(con, cursor):
     print("committed")
 
 
+# Search The contact by any attribute
+def search_contact(attribute_name, attribute, cursor):
+    if attribute_name == "name":
+        query = "Select * From Contacts Where Name = '{}'".format(attribute)
+        cursor.execute(query)
+        search_results = cursor.fetchall()
+        for search_result in search_results:
+            print(reformat(str(search_result)))
+    elif attribute_name == "surname":
+        query = "Select * From Contacts Where SurName = '{}'".format(attribute)
+        cursor.execute(query)
+        search_results = cursor.fetchall()
+        for search_result in search_results:
+            print(reformat(str(search_result)))
+    elif attribute_name == "number":
+        query = "Select * From Contacts Where Number = '{}'".format(attribute)
+        cursor.execute(query)
+        search_results = cursor.fetchall()
+        for search_result in search_results:
+            print(reformat(str(search_result)))
+    elif attribute_name == "address":
+        query = "Select * From Contacts Where Address = '{}'".format(attribute)
+        cursor.execute(query)
+        search_results = cursor.fetchall()
+        for search_result in search_results:
+            print(reformat(str(search_result)))
+    else:
+        print("Wrong Parameter")
+
+
 # Delete the user you want from your contacts
 def delete_contacts(con, cursor):
     number = input("Please Enter the phone number you want to delete from your contacts :: ")
@@ -110,6 +143,7 @@ def main_menu():
         print("2-Add Contact")
         print("3-Return To Login")
         print("4-Delete Contact")
+        print("5-Search Contact")
         print("0- Exit")
         choice = int(input("Enter Your Choice Here : "))
         if choice == 1:
@@ -133,5 +167,14 @@ def main_menu():
             print("**************************" + "\n"
                                                  "**************************" + "\n"
                                                                                 "**************************" + "\n")
+
+        elif choice == 5:
+            attribute_name = input("Please Enter Search Criteria (name,surname,number or address) : ")
+            attribute = input("Please Enter the value you want to search : ")
+            search_contact(attribute_name, attribute, cursor)
+            print("**************************" + "\n"
+                                                 "**************************" + "\n"
+                                                                                "**************************" + "\n")
+
         elif choice == 0:
             exit()
